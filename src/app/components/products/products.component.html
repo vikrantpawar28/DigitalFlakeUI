@@ -1,0 +1,202 @@
+<div class="container">
+  <div class=""  *ngIf="!(openaddform || openEditform)">
+    <div class="table-header">
+      <div>
+        <img src="../../../assets/products1.png" alt="" />
+        <span> products </span>
+      </div>
+      <div class="search-bar">
+        <mat-icon aria-hidden="false" aria-label="Example search icon" fontIcon="search"></mat-icon>
+        <input type="search"  [(ngModel)]="searchTerm" (input)="search()"  />
+      </div>
+      <div>
+        <button (click)="addnew()">Add New</button>
+      </div>
+    </div>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <td>id</td>
+          <td>Name</td>
+          <td>Pack Size</td>
+          <td>Category</td>
+          <td>MRP</td>
+          <td>Image</td>
+          <td>Status</td>
+          <td>Action</td>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngIf="searchTerm === ''; else searchResults">
+        <tr *ngFor="let prod of prodData; let i = index">
+          <td>{{i+1}}</td>
+          <td>{{prod.productName}}</td>
+          <td>{{prod.packSize}}</td>
+          <td>{{prod.categoryName}}</td>
+          <td>{{prod.mrp}}</td>
+          <td><img [src]="prod.productImage" alt="Product Image" style="max-width: 100px; max-height: 100px;"></td>
+          <td>{{prod.status}}</td>
+          <td class="table-action-btn">
+            <button (click)="toggleEdit(prod)">
+              <mat-icon aria-hidden="false" aria-label="Example edit icon" fontIcon="edit"></mat-icon>
+            </button>
+            <button (click)="deleteDialog(prod._id)">
+              <mat-icon aria-hidden="false" aria-label="Example delete icon" fontIcon="delete"></mat-icon>
+            </button>
+          </td>
+        </tr>
+      </ng-container>
+      <ng-template #searchResults>
+      <tr *ngFor="let prod of filteredCategories; let i = index">
+        <td>{{i+1}}</td>
+        <td>{{prod.productName}}</td>
+        <td>{{prod.packSize}}</td>
+        <td>{{prod.categoryName}}</td>
+        <td>{{prod.mrp}}</td>
+        <td><img [src]="prod.productImage" alt="Product Image" style="max-width: 100px; max-height: 100px;"></td>
+        <td>{{prod.status}}</td>
+        <td class="table-action-btn">
+          <button (click)="toggleEdit(prod)">
+            <mat-icon aria-hidden="false" aria-label="Example edit icon" fontIcon="edit"></mat-icon>
+          </button>
+          <button (click)="deleteDialog(prod._id)">
+            <mat-icon aria-hidden="false" aria-label="Example delete icon" fontIcon="delete"></mat-icon>
+          </button>
+        </td>
+      </tr> </ng-template>
+
+      </tbody>
+    </table>
+
+
+    
+  </div>
+
+  <div *ngIf="openaddform">
+    <div class="form-header">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" (click)="close()">
+        <path d="M16 7H3.83L9.42 1.41L8 0L0 8L8 16L9.41 14.59L3.83 9H16V7Z" fill="#807964" />
+      </svg>
+      <span>Add category</span>
+    </div>
+
+    <div class="category-form" *ngIf="openaddform">
+      <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+        <div>
+          <fieldset>
+            <legend>Category</legend>
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-select formControlName="categoryName">
+                <mat-option *ngFor="let category of categories" [value]="category.name">{{ category.name }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </fieldset>
+          <fieldset>
+            <legend>Product Name</legend>
+            <input type="text" formControlName="productName" />
+          </fieldset>
+
+          <fieldset>
+            <legend>Pack Size</legend>
+            <input type="text" formControlName="packSize" />
+          </fieldset>
+        </div>
+        <div>
+          <fieldset>
+            <legend>MRP</legend>
+            <input type="number" formControlName="mrp" />
+          </fieldset>
+
+          <fieldset>
+            <legend>Product image</legend>
+            <div id="uploadcontainer">
+              <input (change)="selectImage($event)" type="file" accept="image/*" name="" id="" />
+              <img class="uploadicon" src="../../../assets/fileupload.png" alt="" />
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Status</legend>
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-select formControlName="status">
+                <mat-option *ngFor="let element of status" [value]="element.value">{{element.name}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </fieldset>
+        </div>
+
+        <div class="form-btn">
+          <button (click)="close()">Cancel</button>
+          <button>Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+
+
+
+  <div *ngIf="openEditform">
+    <div class="form-header">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" (click)="closeedit()">
+        <path d="M16 7H3.83L9.42 1.41L8 0L0 8L8 16L9.41 14.59L3.83 9H16V7Z" fill="#807964" />
+      </svg>
+      <span>Edit Product</span>
+    </div>
+
+    <div class="category-form" *ngIf="openEditform">
+      <form [formGroup]="productForm" (ngSubmit)="editsubmin()">
+        <div>
+          <fieldset>
+            <legend>Category</legend>
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-select formControlName="categoryName">
+                <mat-option *ngFor="let category of categories" [value]="category.name">{{ category.name }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </fieldset>
+          <fieldset>
+            <legend>Product Name</legend>
+            <input type="text" formControlName="productName" />
+          </fieldset>
+
+          <fieldset>
+            <legend>Pack Size</legend>
+            <input type="text" formControlName="packSize" />
+          </fieldset>
+        </div>
+        <div>
+          <fieldset>
+            <legend>MRP</legend>
+            <input type="number" formControlName="mrp" />
+          </fieldset>
+
+          <fieldset>
+            <legend>Product image</legend>
+            <div id="uploadcontainer">
+              <input (change)="selectImage($event)" type="file" accept="image/*" name="" id="" />
+              <img class="uploadicon" src="../../../assets/fileupload.png" alt="" />
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Status</legend>
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-select formControlName="status">
+                <mat-option *ngFor="let element of status" [value]="element.value">{{element.name}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </fieldset>
+        </div>
+
+        <div class="form-btn">
+          <button (click)="closeedit()">Cancel</button>
+          <button>Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
